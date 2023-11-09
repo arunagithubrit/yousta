@@ -1,0 +1,101 @@
+{%extends 'yousta/base.html'%}
+
+{%block body_block%}
+<div class="container">
+
+  <div class="row">
+
+      <div class="col-4">
+          <div class="card" style="width:100%">
+              <img src="{{cloth.image.url}}" class="card-img-top" alt="..." height="200px">
+              <div class="card-body">
+                <h5 class="card-title">{{cloth.name}}</h5>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{cloth.material}}</li>
+                <li class="list-group-item">{{cloth.brand}}</li>
+                <li class="list-group-item">{{cloth.category}}</li>
+              </ul>
+              <div class="card-body">
+                <a href="#" class="card-link">Card link</a>
+                <a href="#" class="card-link">Another link</a>
+              </div>
+            </div>
+      </div>
+      <div class="col-8 border boredr-dark">
+         <table class="table table-striped">
+          <tr>
+              
+              <td>Price</td>
+              <td>Size</td>
+              <td>color</td>
+              <td>offers</td>
+              <td>Action</td>
+          </tr>
+          {%for v in cloth.clothvarients_set.all%}
+
+              <tr>
+                  <td>{{v.price}}</td>
+                  <td>{{v.size}}</td>
+                  <td>{{v.color}}</td>
+                  <td>
+                    <div class="accordion" id="accordionExample">
+                      <div class="accordion-item">
+                        <h2 class="accordion-header">
+                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Accordion Item #1
+                          </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                          <div class="accordion-body">
+                            <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                          </div>
+                        </div>
+                      </div>
+                  </td>
+                  
+
+                  <td>
+                    <a href="{%url 'update-varient' v.id %}" class="btn btn-outline-info">Edit</a>
+                    <a href="{%url 'remove-varient' v.id%}" class="btn btn-outline-danger">remove</a>
+                 
+                    <a href="{%url 'offers-add' v.id%}" class="btn btn-outline-success">add offer</a>
+                    
+                  </td>
+              </tr>
+          {%endfor%}
+
+         </table>
+      </div>
+
+   
+
+
+
+  </div>
+
+  <div class="row">
+    {%for v in cloth.clothvarients_set.all%}
+        {%for o in v.offers_set.all%}
+          <div class="border p-3">
+
+            <div>
+              size {{o.clothvarient.size}} | color  {{o.clothvarient.color}}
+            </div>
+
+            <div><span>offer price$ {{o.price}}</span></div>
+            <div>start_date : {{o.start_date}}</div>
+            <div>due_date :{{o.due_date}}</div>
+            <a href="{%url 'remove-offer' o.id%}">delete offer</a>
+
+          </div>
+        {%endfor%}
+
+    {%endfor%}
+
+  </div>
+
+
+
+</div>
+{%endblock%}

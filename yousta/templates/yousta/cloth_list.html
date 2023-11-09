@@ -1,0 +1,39 @@
+{%extends 'yousta/base.html'%}
+
+{%block body_block%}
+<div class="container">
+
+    <table>
+
+        <tr>
+            <td>Name</td>
+            <td>Material</td>
+            <td>Brand</td>
+            <td>image</td>
+        </tr>
+
+        {%for ct in cloths%}
+            <tr>
+            <td>{{ct.name}}</td>
+            <td>{{ct.material}}</td>
+            <td>{{ct.brand}}</td>
+            <td>
+                <img src="{{ct.image.url}}" alt="" width="100%" height="200px">
+            </td>
+            <td>
+                <a href="{%url 'cloth-remove' ct.id%}">delete</a>
+                <a href="{%url 'add-varient' ct.id%}">add clothvarient</a>
+                <a href="{%url 'cloth-detail' ct.id%}">view</a>
+             
+                
+            </td>
+            </tr>
+        {%endfor%}
+
+    </table>
+
+
+
+
+</div>
+{%endblock%}
