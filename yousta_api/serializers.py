@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from yousta.models import User,Cloths,ClothVarients,Carts,Orders,Reviews
+from yousta.models import User,Cloths,ClothVarients,Carts,Orders,Reviews,Offers
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,13 +13,31 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
+class OfferSerializer(serializers.ModelSerializer):
+    id=serializers.CharField(read_only=True)
+    price=serializers.CharField(read_only=True)
+    start_date=serializers.CharField(read_only=True)
+    due_date=serializers.CharField(read_only=True)
+    
+    class Meta:
+        model=Offers
+        exclude=("clothvarient",)
 
 class ClothVarientSerializer(serializers.ModelSerializer):
     id=serializers.CharField(read_only=True)
+    offers=OfferSerializer(read_only=True,many=True)
 
     class Meta:
         model=ClothVarients
         exclude=('cloth',)
+
+class ReviewSerializer(serializers.ModelSerializer):
+    id=serializers.CharField(read_only=True)
+    cloth=serializers.CharField(read_only=True)
+    user=serializers.CharField(read_only=True)
+    class Meta:
+        model=Reviews
+        fields="__all__"
 
 
 
@@ -27,6 +45,8 @@ class ClothsSerializer(serializers.ModelSerializer):
     # category=serializers.StringRelatedField(read_only=True)
     category=serializers.SlugRelatedField(slug_field="name",read_only=True)
     varients=ClothVarientSerializer(many=True,read_only=True)
+    reviews=ReviewSerializer(read_only=True,many=True)
+    avg_rating=serializers.CharField(read_only=True)
     class Meta:
         model=Cloths
         fields='__all__'
@@ -53,10 +73,3 @@ class OrderSerializer(serializers.ModelSerializer):
         model=Orders
         fields=["id","user","clothvarient","status","orderd_date","expected_date","address"]
 
-class ReviewSerializer(serializers.ModelSerializer):
-    id=serializers.CharField(read_only=True)
-    cloth=serializers.CharField(read_only=True)
-    user=serializers.CharField(read_only=True)
-    class Meta:
-        model=Reviews
-        fields="__all__"

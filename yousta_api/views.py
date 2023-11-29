@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet,ViewSet
 from rest_framework.decorators import action
 from rest_framework import authentication
 from rest_framework import permissions
-from yousta.models import Cloths,ClothVarients,Carts,Orders
+from yousta.models import Cloths,ClothVarients,Carts,Orders,Reviews
 # Create your views here.
 
 
@@ -66,8 +66,6 @@ class ClothsView(ModelViewSet):
         else:
             return Response(data=serializer.errors)
 
-
-
 class CartsView(ViewSet):
     # authentication_classes=[authentication.BasicAuthentication]
     authentication_classes=[authentication.TokenAuthentication]
@@ -81,8 +79,12 @@ class CartsView(ViewSet):
     
     def destroy(self,request,*args,**kwargs):
         id=kwargs.get("pk")
-        Carts.objects.get(id=id).delete()
-        return Response(data={"msg":"deleted"})
+        instance=Carts.objects.get(id=id)
+        if instance.user==request.user:
+            instance.delete()
+            return Response(data={"msg":"deleted"})
+        else:
+            return Response(data={"message":"permission denied"})
 
 class OrderView(ViewSet):
     # authentication_classes=[authentication.BasicAuthentication]
@@ -104,6 +106,27 @@ class OrderView(ViewSet):
             return Response(data={"msg":"deleted"})
         else:
             return Response(data={"message":"permissions denied"})
+
+
+class ReviewView(ViewSet):
+    # authentication_classes=[authentication.BasicAuthentication]
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+    serializer_class=ReviewSerializer
+    def list(self,request,*args,**kwargs):
+        qs=Reviews.objects.filter(user=request.user)
+        serializer=ReviewSerializer(qs,many=True)
+        return Response(data=serializer.data)
+    
+    def destroy(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        instance=Reviews.objects.get(id=id)
+        if instance.user==request.user:
+            instance.delete()
+            return Response(data={"msg":"deleted"})    
+        else:
+            return Response(data={"message":"permission denied"})
+
 
 
 

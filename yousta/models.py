@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from datetime import date
 
 class User(AbstractUser):
 
@@ -34,6 +35,16 @@ class Cloths(models.Model):
     def varients(self):
         qs=self.clothvarients_set.all()
         return qs
+    
+    @property
+    def reviews(self):
+        qs=self.reviews_set.all()
+        return qs
+    
+    @property
+    def avg_rating(self):
+        ratings=self.reviews_set.all().values_list("rating",flat=True)
+        return sum(ratings)/len(ratings) if ratings else 0
 
     def __str__(self):
         return self.name
@@ -54,6 +65,13 @@ class ClothVarients(models.Model):
 
     def __str__(self):
         return self.cloth.name
+    
+    @property
+    def offers(self):
+        current_date=date.today()
+        qs=self.offers_set.all()
+        qs=qs.filter(due_date__gte=current_date)
+        return qs
 
 
 class Offers(models.Model):
